@@ -1,18 +1,8 @@
 import os
-from dotenv import load_dotenv
 from litellm import completion
 
 from pricer.items import Item
 from pricer.evaluator import evaluate
-
-############################################################
-# Load API Key
-############################################################
-
-load_dotenv(override=True)
-
-os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
-
 ############################################################
 # Load Dataset
 ############################################################
@@ -42,15 +32,19 @@ print(
 def messages_for(item):
 
     message = f"""
-Estimate the price of this product.
+    You are an expert e-commerce pricing model.
 
-Respond ONLY with the numeric price.
+    Estimate the market price of the following product.
 
-Product Description:
+    Rules:
+    - Output ONLY the numeric price.
+    - Do not include '$', commas, or explanations.
+    - If uncertain, estimate the most likely selling price.
 
-{item.summary}
-"""
+    Product Description:
 
+    {item.summary}
+    """
     return [
         {
             "role": "user",
@@ -62,16 +56,13 @@ Product Description:
 # Frontier Model
 ############################################################
 
-def groq_llama(item):
+def gemma3(item):
 
     response = completion(
-
-        model="groq/llama-3.3-70b-versatile",
-
+        model="ollama/gemma3:4b",
+        api_base="http://localhost:11434",
         messages=messages_for(item),
-
         temperature=0
-
     )
 
     return response.choices[0].message.content.strip()
@@ -80,7 +71,7 @@ def groq_llama(item):
 # Test One Prediction
 ############################################################
 
-prediction = groq_llama(test[0])
+prediction = gemma3(test[0])
 
 print("=" * 60)
 print("Prediction :", prediction)
@@ -91,4 +82,4 @@ print("=" * 60)
 # Evaluate
 ############################################################
 
-evaluate(groq_llama, test[:29], workers=1)
+evaluate(gemma3, test)
