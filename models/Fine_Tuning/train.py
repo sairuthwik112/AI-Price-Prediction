@@ -27,9 +27,30 @@ from trl import (
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-load_dotenv()
+# ==========================================================
+# Authentication (Works in BOTH VS Code and Google Colab)
+# ==========================================================
 
-login(token=os.getenv("HF_TOKEN"))
+try:
+    # Google Colab
+    from google.colab import userdata # type: ignore
+
+    HF_TOKEN = userdata.get("HF_TOKEN")
+    WANDB_API_KEY = userdata.get("WANDB_API_KEY")
+
+except ImportError:
+    # VS Code / Local
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
+    HF_TOKEN = os.getenv("HF_TOKEN")
+    WANDB_API_KEY = os.getenv("WANDB_API_KEY")
+
+login(token=HF_TOKEN)
+
+if WANDB_API_KEY:
+    wandb.login(key=WANDB_API_KEY)
 
 # ==========================================================
 # Model Configuration
@@ -150,10 +171,6 @@ LOG_TO_WANDB = True
 
 # Log in to Weights & Biases
 
-wandb_api_key = os.getenv("WANDB_API_KEY")
-
-if wandb_api_key:
-    wandb.login(key=wandb_api_key)
 
 # Configure Weights & Biases
 
