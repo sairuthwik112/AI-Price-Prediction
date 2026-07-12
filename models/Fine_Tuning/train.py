@@ -27,25 +27,21 @@ from trl import (
 from datetime import datetime
 import matplotlib.pyplot as plt
 
+
 # ==========================================================
 # Authentication (Works in BOTH VS Code and Google Colab)
 # ==========================================================
 
-try:
-    # Google Colab
-    from google.colab import userdata # type: ignore
+from dotenv import load_dotenv
 
-    HF_TOKEN = userdata.get("HF_TOKEN")
-    WANDB_API_KEY = userdata.get("WANDB_API_KEY")
+# Load .env if it exists (VS Code)
+load_dotenv()
 
-except ImportError:
-    # VS Code / Local
-    from dotenv import load_dotenv
+HF_TOKEN = os.getenv("HF_TOKEN")
+WANDB_API_KEY = os.getenv("WANDB_API_KEY")
 
-    load_dotenv()
-
-    HF_TOKEN = os.getenv("HF_TOKEN")
-    WANDB_API_KEY = os.getenv("WANDB_API_KEY")
+if HF_TOKEN is None:
+    raise ValueError("HF_TOKEN not found.")
 
 login(token=HF_TOKEN)
 
