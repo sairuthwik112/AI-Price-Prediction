@@ -11,7 +11,7 @@ from pricer.evaluator import evaluate
 # Configuration
 # ============================================================
 
-LITE_MODE = True
+LITE_MODE = False
 USERNAME = "ed-donner"
 
 DATASET = (
